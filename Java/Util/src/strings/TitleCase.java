@@ -13,8 +13,6 @@ import java.util.Arrays;
  * extra Boolean that allows the method to ignore words that are fully
  * capitalized when converting.
  * 
- * 
- * 
  * @author FaunoGuazina
  *
  **/
@@ -27,7 +25,8 @@ public final class TitleCase {
 	 * any space characters that may be at the beginning and at the end, then
 	 * removes any double spacing, then set false to ignore CAPITAL WORDS and
 	 * exceptions with capitalization, after all proceed with the conversion into
-	 * Title Case. This method calls the method of(toConvert, false, exceptions).
+	 * Title Case. This method calls the method of(toConvert, false, false,
+	 * exceptions).
 	 * 
 	 * @param toConvert  : the string sentence that will be converted.
 	 * @param exceptions : array of strings with all words that will be ignored when
@@ -37,7 +36,7 @@ public final class TitleCase {
 	 */
 	public static String of(String toConvert, String... exceptions) {
 
-		return of(toConvert, false, exceptions);
+		return toTitleSentence(toConvert, false, false, exceptions);
 	}
 
 	/**
@@ -65,7 +64,7 @@ public final class TitleCase {
 	 */
 	public static String of(String toConvert, boolean caseSensitive, String... exceptions) {
 
-		return toTitleSentence(toConvert, caseSensitive, exceptions);
+		return toTitleSentence(toConvert, caseSensitive, false, exceptions);
 	}
 
 	/**
@@ -80,7 +79,8 @@ public final class TitleCase {
 	 * Case, otherwise will convert the whole string including capitalized words,
 	 * after all and send everything to conversion by {@code toTitleWord} method. If
 	 * the whole sentence is in upper case it will be fully converted to lower case
-	 * by default.
+	 * by default. This method calls the method of(toConvert, false, false,
+	 * exceptions).
 	 * 
 	 * @param toConvert     : the string sentence that will be converted.
 	 * @param caseSensitive : boolean that configures if exceptions words will be
@@ -111,45 +111,6 @@ public final class TitleCase {
 	 * Private builder to prevent this utility class from being instantiated.
 	 */
 	private TitleCase() {
-	}
-
-	/**
-	 * Private method that processes the string sentence to be converted: first
-	 * eliminates any space characters that may be at the beginning and at the end,
-	 * then removes any double spacing, then split the string from its spaces in an
-	 * array of words. For each one of them proceeds with the verification, if
-	 * {@code caseSensitive} is true will first checks if there are exceptions, if
-	 * so it configures that there are exceptions with sensitive case or variable
-	 * capitalization, if negative transform exceptions in lower case, after all
-	 * send everything to conversion by {@code toTitleWord} method. If the whole
-	 * sentence is in upper case it will be fully converted to lower case by
-	 * default.
-	 * 
-	 * @param toConvert     : the string sentence that will be converted.
-	 * @param caseSensitive : boolean that configures if exceptions words will be
-	 *                      ignored with case sensitive and keep their original
-	 *                      forms, if false it will convert the exceptions string
-	 *                      including capitalized words -> {@code False}:
-	 *                      "exception1", "exception2", "exception3"...
-	 *                      {@code True}: "EXCEPTION1", "eXcePtiOn2",
-	 *                      "EXCEPtion3"...
-	 * @param exceptions    : array of all words that will be ignored when
-	 *                      converting OR words strings separated by a comma :
-	 *                      "word1", "word2", "word3"...
-	 * @return the same string sentence converted to a Title Case.
-	 */
-	private static String toTitleSentence(String toConvert, boolean caseSensitive, String... exceptions) {
-
-		StringBuilder result = new StringBuilder();
-
-		String exception = exceptions(caseSensitive, exceptions);
-
-		Arrays.asList(((toConvert.matches(UPPER_SENTENCE)) ? toConvert.toLowerCase() : toConvert).trim()
-				.replaceAll("( )+", " ").split(" ")).stream()
-				.forEach(word -> result.append(((exception.contains(word)) ? word : toTitleWord(word)) + " "));
-
-		return (exception.isEmpty()) ? result.toString().trim()
-				: String.valueOf(result.charAt(0)).toUpperCase() + result.toString().trim().substring(1);
 	}
 
 	/**
