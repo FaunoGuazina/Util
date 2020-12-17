@@ -262,8 +262,12 @@ public final class TitleCase {
 	 */
 	private static String titleWithPuncts(String word) {
 		builder = new StringBuilder();
-		Arrays.stream(word.split("")).forEach(letter -> builder.append(lowOrUp(letter)));
+		Arrays.stream(word.split("")).forEach(TitleCase::append);
 		return builder.toString();
+	}
+	
+	private static void append(String letter) {
+		builder.append(lowOrUp(letter));
 	}
 	
 	/**
