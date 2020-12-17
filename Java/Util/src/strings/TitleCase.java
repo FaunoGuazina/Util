@@ -253,9 +253,8 @@ public final class TitleCase {
 	}
 
 	/**
-	 * Private auxiliary method, analyze character by character to define its capitalization or not. to
-	 * capitalize a character, the method checks the following possibilities: if it
-	 * 
+	 * Private auxiliary method that create a new Builder instance and add each
+	 * converted character then return it as a string
 	 * 
 	 * @param word the string word itself that will be converted
 	 * @return a string word converted to a Title Case
@@ -266,16 +265,21 @@ public final class TitleCase {
 		return builder.toString();
 	}
 	
+	/**
+	 * Private auxiliary method which adds to the Builder each character converted
+	 * from the word
+	 * 
+	 * @param letter the character to be append in builder
+	 */
 	private static void append(String letter) {
 		builder.append(lowOrUp(letter));
 	}
 	
 	/**
-	 * Private auxiliary method, which evaluates whether the letter needs to be
-	 * capitalized or not
+	 * Private auxiliary method, which evaluates each letter needs to be
+	 * capitalized or not.
 	 * 
-	 * @param builder instance being used to reconstruct the converted word
-	 * @param letter  the character in question that is being analyzed
+	 * @param letter the character in question that is being analyzed
 	 * @return the same character in upper or lower case
 	 */
 	private static String lowOrUp(String letter) {
@@ -287,7 +291,6 @@ public final class TitleCase {
 	 * was a space before or if there were any of these chars before:
 	 * !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
 	 * 
-	 * @param builder instance being used to reconstruct the converted word
 	 * @return boolean true if it is the first letter of the word or if it has a
 	 *         special char, false if not.
 	 */
