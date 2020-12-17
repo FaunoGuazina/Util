@@ -261,8 +261,8 @@ public final class TitleCase {
 	 * @return a string word converted to a Title Case
 	 */
 	private static String titleWithPuncts(String word) {
-		StringBuilder builder = new StringBuilder();
-		Arrays.stream(word.split("")).forEach(letter -> builder.append(lowOrUp(builder, letter)));
+		builder = new StringBuilder();
+		Arrays.stream(word.split("")).forEach(letter -> builder.append(lowOrUp(letter)));
 		return builder.toString();
 	}
 	
@@ -274,8 +274,8 @@ public final class TitleCase {
 	 * @param letter  the character in question that is being analyzed
 	 * @return the same character in upper or lower case
 	 */
-	private static String lowOrUp(StringBuilder builder, String letter) {
-		return conditionToUpper(builder) ? letter.toUpperCase() : letter.toLowerCase();
+	private static String lowOrUp(String letter) {
+		return conditionToUpper() ? letter.toUpperCase() : letter.toLowerCase();
 	}
 
 	/**
@@ -287,7 +287,7 @@ public final class TitleCase {
 	 * @return boolean true if it is the first letter of the word or if it has a
 	 *         special char, false if not.
 	 */
-	private static boolean conditionToUpper(StringBuilder builder) {
+	private static boolean conditionToUpper() {
 		if (builder.length() == 0) return true;
 		String lastCharOnBuilder = String.valueOf(builder.charAt(builder.length() - 1)); 
 		return lastCharOnBuilder.matches("\\p{Punct}|\\s");
@@ -307,7 +307,7 @@ public final class TitleCase {
 	 */
 	private static void setExceptions(String... words) {
 
-		StringBuilder builder = new StringBuilder();
+		builder = new StringBuilder();
 
 		String puncts = "!,./\\:;?";
 		String wraps = "\"'`";
@@ -334,6 +334,8 @@ public final class TitleCase {
 	
 	//set of static variables used by this utility class
 
+	private static StringBuilder builder;
+	
 	private static String exceptions;
 
 	private static boolean capitalWord;
