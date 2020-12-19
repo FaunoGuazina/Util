@@ -387,23 +387,14 @@ public final class TitleCase {
 
 	private static final String PUNCTS = "!,./\\:;?";
 
-	private static final String LOWER_LETTERS = "àáâãāăȧäảåǎȁȃąạḁầấẫẩằắẵẳǡǟǻậặⱥɐæǽǣɑ" + "ḃɓḅḇƃƅƀ" + "ćĉċčƈçḉȼ"
-			+ "ḋɗḍḏḑḓďðđɖƌ" + "èéêẽēĕėëẻěȅȇẹȩęḙḛềếễểḕḗệḝǝɇɛ" + "ḟƒ" + "ǵĝḡğġǧɠģǥ" + "ĥḧȟḥḩḫħⱨƕ" + "ìíîĩīĭi̇ïỉǐịįȉȋḭɨḯ"
-			+ "ĳĵɉ" + "ḱǩḵƙḳķⱪ" + "ĺḻḷļḽľŀłḹƚⱡɫ" + "ḿṁṃɱɯ" + "ǹńñṅňŋɲṇņṋṉƞ" + "òóôõōŏȯöỏőǒȍȏơǫọɵøồốỗổȱȫȭṍṑṓờớỡởợǭộǿɔœƣ"
-			+ "ṕṗƥᵽ" + "ɋ" + "ŕṙřȑȓṛŗṟṝʀɍɽ" + "śŝṡšṣșşȿṥṧṩƨß" + "ṫťƭʈṭțţṱṯŧⱦ" + "ùúûũūŭüủůűǔȕȗưụṳųṷṵṹṻǜǘǖǚừứữửựʉṽ"
-			+ "ṿʋʌ" + "ẁẃŵẇẅẉⱳ" + "ẋẍỳýŷỹȳẏÿỷƴỵɏ" + "źẑżžȥẓẕƶɀⱬ";
+	private static final String JUST_LETTERS = "\\p{L}+";
 
-	private static final String UPPER_LETTERS = "ÀÁÂÃĀĂȦÄẢÅǍȀȂĄẠḀẦẤẪẨẰẮẴẲǠǞǺẬẶȺⱯÆǼǢⱭ" + "ḂƁḄḆƂƄɃ" + "ĆĈĊČƇÇḈȻ"
-			+ "ḊƊḌḎḐḒĎÐĐƉƋ" + "ÈÉÊẼĒĔĖËẺĚȄȆẸȨĘḘḚỀẾỄỂḔḖỆḜƎɆƐ" + "ḞƑ" + "ǴĜḠĞĠǦƓĢǤ" + "ĤḦȞḤḨḪĦⱧǶ" + "ÌÍÎĨĪĬİÏỈǏỊĮȈȊḬƗḮ"
-			+ "ĲĴɈ" + "ḰǨḴƘḲĶⱩ" + "ĹḺḶĻḼĽĿŁḸȽⱠⱢ" + "ḾṀṂⱮƜ" + "ǸŃÑṄŇŊƝṆŅṊṈȠ" + "ÒÓÔÕŌŎȮÖỎŐǑȌȎƠǪỌƟØỒỐỖỔȰȪȬṌṐṒỜỚỠỞỢǬỘǾ"
-			+ "ƆŒƢṔṖƤⱣɊ" + "ŔṘŘȐȒṚŖṞṜƦɌⱤ" + "ŚŜṠŠṢȘŞⱾṤṦṨƧẞ" + "ṪŤƬƮṬȚŢṰṮŦȾ" + "ÙÚÛŨŪŬÜỦŮŰǓȔȖƯỤṲŲṶṴṸṺǛǗǕǙỪỨỮỬỰɄṼṾƲɅ"
-			+ "ẀẂŴẆẄẈⱲẊẌ" + "ỲÝŶỸȲẎŸỶƳỴɎ" + "ŹẐŻŽȤẒẔƵⱿⱫ";
+	private static final String PC = "\\p{Punct}";
+	
+	private static final String N_LU = "[\\p{N}\\p{Lu}]+";
+	
+	private static final String CAPITAL_WORD = String.format("%s*%s(%s+%s)*%s*", PC, N_LU, PC, N_LU, PC);
 
-	private static final String JUST_LETTERS = "[A-Za-z" + UPPER_LETTERS + LOWER_LETTERS + "]+";
-
-	private static final String CAPITAL_WORD = "\\p{Punct}*[A-Z0-9" + UPPER_LETTERS + "]+\\p{Punct}*[A-Z0-9"
-			+ UPPER_LETTERS + "\\p{Punct}*]*";
-
-	private static final String UPPER_SENTENCE = "^\\s*" + CAPITAL_WORD + "(\\s*" + CAPITAL_WORD + ")*\\s*$";
+	private static final String UPPER_SENTENCE = String.format("^\\s*%s(\\s+%s)*\\s*$", CAPITAL_WORD, CAPITAL_WORD);
 
 }
