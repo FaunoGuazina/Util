@@ -1,6 +1,7 @@
 package strings;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * Class that contains three static and public methods for converting strings
@@ -25,7 +26,7 @@ public final class TitleCase {
 	 * Case. If the whole sentence is in upper case it will be fully converted to
 	 * lower case by default.
 	 * 
-	 * @param toConvert  : the string sentence that will be converted.
+	 * @param toConvert : the string sentence that will be converted.
 	 * @return The same string sentence converted to a Title Case.
 	 */
 	public static String all(String toConvert) {
@@ -44,10 +45,10 @@ public final class TitleCase {
 	 * all send everything to conversion. If the whole sentence is in upper case it
 	 * will be fully converted to lower case by default.
 	 * 
-	 * @param toConvert     : the string sentence that will be converted.
-	 * @param exceptions    : array of strings with all words that will be ignored
-	 *                      when converting OR words strings separated by a comma :
-	 *                      "word1", "word2", "word3"...
+	 * @param toConvert  : the string sentence that will be converted.
+	 * @param exceptions : array of strings with all words that will be ignored when
+	 *                   converting OR words strings separated by a comma : "word1",
+	 *                   "word2", "word3"...
 	 * @return the same string sentence converted to a Title Case.
 	 */
 	public static String withExceptions(String toConvert, String... exceptions) {
@@ -82,9 +83,8 @@ public final class TitleCase {
 		return toTitleSentence(toConvert);
 	}
 
-
 	// PUBLIC INSTANCE METHODS FOR USE ----------------------- PUBLIC INSTANCE METHODS FOR USE //
-	
+
 	/**
 	 * Constructor that allows you to create an instance of TitleCase class and thus
 	 * configure the global exceptions that will be used in your methods. This
@@ -106,7 +106,7 @@ public final class TitleCase {
 	 * to be ignored, after all send everything to conversion. If the whole sentence
 	 * is in upper case it will be fully converted to lower case by default.
 	 * 
-	 * @param toConvert  : the string sentence that will be converted.
+	 * @param toConvert : the string sentence that will be converted.
 	 * @return the same string sentence converted to a Title Case.
 	 */
 	public String titleCase(String toConvert) {
@@ -124,7 +124,7 @@ public final class TitleCase {
 	 * any word that is fully capitalized, if the whole sentence is in upper case it
 	 * will be fully converted to lower case by default.
 	 * 
-	 * @param toConvert  : the string sentence that will be converted.
+	 * @param toConvert : the string sentence that will be converted.
 	 * @return the same string sentence converted to a Title Case.
 	 */
 	public String titleCAPITAL(String toConvert) {
@@ -133,7 +133,7 @@ public final class TitleCase {
 
 		return toTitleSentence(toConvert);
 	}
-	
+
 	// PRIVATE METHODS FOR INTERNAL USE ----------------------- PRIVATE METHODS FOR INTERNAL USE //
 
 	/**
@@ -151,41 +151,52 @@ public final class TitleCase {
 	 */
 	private static String toTitleSentence(String toConvert) {
 
-		String[] arrayWords = Arrays.stream(arrayWordsOf(toConvert)).map(TitleCase::rateWords).toArray(String[]::new);
+		setTheInput(toConvert);
 
-		if (!TitleCase.exceptions.isEmpty())
-			arrayWords[0] = rateFirtWord(arrayWords[0]);
+		setArrayOfConvertedWords();
+
+		if (hasExceptions())
+			rateFirstWordOfArray();
 
 		return String.join(" ", arrayWords);
 	}
 
 	/**
-	 * Private auxiliary method that prepares the string that will be converted into
-	 * TitleCase. First check if the string is all uppercase, if so it converts it
-	 * to all lowercase, if negative it keeps the same form. Then it eliminates
-	 * spaces that may exist at the beginning and at the end (TRIM). Then replace
-	 * any multiple space with single spaces. Then it transforms into an array by
-	 * breaking the string by epsaces (SPLIT).
+	 * Private auxiliary method that prepares the string that will be converted.
+	 * First check if the string is all uppercase, if so it converts it to all
+	 * lowercase, then eliminates spaces that may exist at the beginning and at the
+	 * end (TRIM), then replace any multiple space with single spaces.
 	 * 
-	 * @param input
-	 * @return array of strings
+	 * @param input string to be converted
 	 */
-	private static String[] arrayWordsOf(String input) {
-		input = (input.matches(UPPER_SENTENCE)) ? input.toLowerCase() : input;
-		input = input.trim().replaceAll("( )+", " ");
-		return input.split(" ");
+	private static void setTheInput(String input) {
+		if (input.matches(UPPER_SENTENCE)) {
+			input = input.toLowerCase();
+		}
+		TitleCase.theInput = input.trim().replaceAll("( )+", " ");
 	}
-	
+
 	/**
-	 * Private auxiliary method that checks whether the word fits the exception rule or
-	 * whether it should be converted to TitleCase, depending on the case invokes
+	 * Private auxiliary method that break theInput to be converted into an array by
+	 * split in spaces, then put that into a stream, then map to convert and collect
+	 * a new array. If there are exceptions, the first word may be one and thus
+	 * ensures that it is in title case
+	 */
+	private static void setArrayOfConvertedWords() {
+		TitleCase.arrayWords = Arrays.stream(theInput.split(" "))
+				.map(TitleCase::rateWords).toArray(String[]::new);
+	}
+
+	/**
+	 * Private auxiliary method that checks whether the word fits the exception rule
+	 * or whether it should be converted to TitleCase, depending on the case invokes
 	 * relevant auxiliary methods
 	 * 
 	 * @param word string each word in array
 	 * @return string treated word (converted if is the case)
 	 */
 	private static String rateWords(String word) {
-		return verifyIsExceptions(word) ? lowNonCapitalOrExceptions(word) : titleCaseBasic(word);
+		return isExceptions(word) ? rateExceptions(word) : toTitleCase(word);
 	}
 
 	/**
@@ -197,9 +208,11 @@ public final class TitleCase {
 	 * @return boolean false if it doesn't match any type of exception or true if it
 	 *         matches
 	 */
-	private static boolean verifyIsExceptions(String word) {
-		boolean isException = Arrays.stream(exceptions.split(" ")).parallel().anyMatch(w -> w.equalsIgnoreCase(word));
-		return capitalWord && word.matches(CAPITAL_WORD) || isException;
+	private static boolean isExceptions(String word) {
+		boolean isException = Arrays.stream(exceptions.split(" "))
+				.parallel().anyMatch(w -> w.equalsIgnoreCase(word));
+		boolean isCapitalWord = capitalWord && word.matches(CAPITAL_WORD);
+		return isException || isCapitalWord;
 	}
 
 	/**
@@ -211,22 +224,30 @@ public final class TitleCase {
 	 *         returns all lower case if it is a word that needs to be ignored when
 	 *         converting.
 	 */
-	private static String lowNonCapitalOrExceptions(String word) {
+	private static String rateExceptions(String word) {
 		boolean isException = Arrays.stream(exceptions.split(" ")).parallel().anyMatch(w -> w.equals(word));
 		return capitalWord || isException ? word : word.toLowerCase();
 	}
-	
+
 	/**
-	 * Private auxiliary method that checks only the first word of the string, when
-	 * there are exceptions it may be that the first word is in lowercase, so it
-	 * proceeds with evaluation and if necessary conversion into TitleCase.
+	 * Private auxiliary method that checks if there are exceptions, simply to
+	 * improve readability
 	 * 
-	 * @param word
-	 * @return string : if it is a capitalized word it returns identical, if it does
-	 *         not convert into TitleCase
+	 * @return boolean true if there are and false if not.
 	 */
-	private static String rateFirtWord(String word) {
-		return capitalWord && word.matches(CAPITAL_WORD) ? word : titleCaseBasic(word);
+	private static boolean hasExceptions() {
+		return !TitleCase.exceptions.isEmpty();
+	}
+
+	/**
+	 * Private auxiliary method that converts the first word of the array to title
+	 * case if necessary.
+	 */
+	private static void rateFirstWordOfArray() {
+		boolean isFirstWordNonCapital = capitalWord && !arrayWords[0].matches(CAPITAL_WORD);
+		if (!capitalWord || isFirstWordNonCapital) {
+			arrayWords[0] = toTitleCase(arrayWords[0]);
+		}
 	}
 
 	/**
@@ -237,7 +258,7 @@ public final class TitleCase {
 	 * @param word the string word itself that will be converted
 	 * @return a string word converted to a Title Case
 	 */
-	private static String titleCaseBasic(String word) {
+	private static String toTitleCase(String word) {
 		return (word.matches(JUST_LETTERS)) ? titleJustLetters(word) : titleWithPuncts(word);
 	}
 
@@ -264,7 +285,7 @@ public final class TitleCase {
 		Arrays.stream(word.split("")).forEach(TitleCase::append);
 		return builder.toString();
 	}
-	
+
 	/**
 	 * Private auxiliary method which adds to the Builder each character converted
 	 * from the word
@@ -274,10 +295,10 @@ public final class TitleCase {
 	private static void append(String letter) {
 		builder.append(lowOrUp(letter));
 	}
-	
+
 	/**
-	 * Private auxiliary method, which evaluates each letter needs to be
-	 * capitalized or not.
+	 * Private auxiliary method, which evaluates each letter needs to be capitalized
+	 * or not.
 	 * 
 	 * @param letter the character in question that is being analyzed
 	 * @return the same character in upper or lower case
@@ -295,37 +316,10 @@ public final class TitleCase {
 	 *         special char, false if not.
 	 */
 	private static boolean conditionToUpper() {
-		if (builder.length() == 0) return true;
-		String lastCharOnBuilder = String.valueOf(builder.charAt(builder.length() - 1)); 
+		if (builder.length() == 0)
+			return true;
+		String lastCharOnBuilder = String.valueOf(builder.charAt(builder.length() - 1));
 		return lastCharOnBuilder.matches("\\p{Punct}|\\s");
-	}
-
-	/**
-	 * Method that configures exceptions, that is, the words that will be ignored
-	 * when converting to TitleCase. This method has Varargs as a parameter
-	 * and therefore the way of passing multiple words is in the form of strings
-	 * separated by a comma or an array of strings.
-	 * 
-	 * @param words : Varargs whith de words to be ignored
-	 * @return If set previously string with exceptions separated by space, is
-	 *         equivalent to: "word1 word2 word3 ", otherwise an empty string "". It
-	 *         also adds versions with these !,./\:;? grammatical points after each
-	 *         word and versions in between ()[]{}.
-	 */
-	private static void setExceptions(String... words) {
-
-		builder = new StringBuilder();
-
-		String puncts = "!,./\\:;?";
-		String wraps = "\"'`";
-
-		Arrays.stream(words).forEach(word -> {
-			builder.append(word + " (" + word + ") " + "[" + word + "] " + "{" + word + "} ");
-			Arrays.stream(puncts.split("")).forEach(p -> builder.append(word + p + " "));
-			Arrays.stream(wraps.split("")).forEach(w -> builder.append(w + word + w + " "));
-		});
-
-		TitleCase.exceptions = builder.toString();
 	}
 
 	/**
@@ -338,14 +332,60 @@ public final class TitleCase {
 	private static void setCapitalWord(boolean capitalWord) {
 		TitleCase.capitalWord = capitalWord;
 	}
-	
-	//set of static variables used by this utility class
 
-	private static StringBuilder builder;
-	
+	/**
+	 * Method that configures exceptions, that is, the words that will be ignored
+	 * when converting to TitleCase. This method has Varargs as a parameter and
+	 * therefore the way of passing multiple words is in the form of strings
+	 * separated by a comma or an array of strings.
+	 * 
+	 * @param words : Varargs whith de words to be ignored
+	 * @return If set previously string with exceptions separated by space, is
+	 *         equivalent to: "word1 word2 word3 ", otherwise an empty string "". It
+	 *         also adds versions with these !,./\:;? grammatical points after each
+	 *         word and versions in between ()[]{}"'`.
+	 */
+	private static void setExceptions(String... words) {
+
+		TitleCase.exceptions = Arrays.stream(words).parallel()
+				.map(TitleCase::concatAllVariations)
+				.collect(Collectors.joining());
+	}
+
+	// Concat all variations methods
+	private static String concatAllVariations(String word) {
+		return word.concat(whithWraps(word)).concat(whithPuncts(word));
+	}
+
+	// Produce variations with WRAPS
+	private static String whithWraps(String word) {
+		return Arrays.stream(WRAPS.split("")).parallel()
+				.map(w -> " " + w + word + w + " (" + word 
+						+ ") [" + word + "] {" + word + "} ")
+				.collect(Collectors.joining());
+	}
+
+	// Produce variations with PUNCTS
+	private static String whithPuncts(String word) {
+		return Arrays.stream(PUNCTS.split("")).parallel()
+				.map(p -> word + p + " ").collect(Collectors.joining());
+	}
+
+	// set of static variables used by this utility class
+
+	private static String[] arrayWords;
+
+	private static String theInput;
+
 	private static String exceptions;
 
 	private static boolean capitalWord;
+
+	private static StringBuilder builder;
+
+	private static final String WRAPS = "\"'`";
+
+	private static final String PUNCTS = "!,./\\:;?";
 
 	private static final String LOWER_LETTERS = "àáâãāăȧäảåǎȁȃąạḁầấẫẩằắẵẳǡǟǻậặⱥɐæǽǣɑ" + "ḃɓḅḇƃƅƀ" + "ćĉċčƈçḉȼ"
 			+ "ḋɗḍḏḑḓďðđɖƌ" + "èéêẽēĕėëẻěȅȇẹȩęḙḛềếễểḕḗệḝǝɇɛ" + "ḟƒ" + "ǵĝḡğġǧɠģǥ" + "ĥḧȟḥḩḫħⱨƕ" + "ìíîĩīĭi̇ïỉǐịįȉȋḭɨḯ"
